@@ -8,30 +8,21 @@ const defaultSignals = {
   uncertain: [],
 };
 
-const btnConfig = [
+const btns = [
   {
-    type:    "cash",
-    label:   "Cash",
-    icon:    Banknote,
-    wrapper: "border-emerald-200 bg-emerald-50/80 hover:border-emerald-400 hover:bg-emerald-100 focus-visible:ring-emerald-500",
-    iconBg:  "bg-gradient-to-br from-emerald-500 to-teal-500",
-    text:    "text-emerald-800",
+    type: "cash", label: "Cash", icon: Banknote,
+    iconBg: "rgba(16,185,129,0.18)", iconColor: "#34d399",
+    hoverBorder: "rgba(16,185,129,0.35)",
   },
   {
-    type:    "card",
-    label:   "Card / POS",
-    icon:    CreditCard,
-    wrapper: "border-blue-200 bg-blue-50/80 hover:border-blue-400 hover:bg-blue-100 focus-visible:ring-blue-500",
-    iconBg:  "bg-gradient-to-br from-blue-500 to-cyan-500",
-    text:    "text-blue-800",
+    type: "card", label: "Card / POS", icon: CreditCard,
+    iconBg: "rgba(59,130,246,0.18)", iconColor: "#60a5fa",
+    hoverBorder: "rgba(59,130,246,0.35)",
   },
   {
-    type:    "uncertain",
-    label:   "Uncertain",
-    icon:    HelpCircle,
-    wrapper: "border-amber-200 bg-amber-50/80 hover:border-amber-400 hover:bg-amber-100 focus-visible:ring-amber-500",
-    iconBg:  "bg-gradient-to-br from-amber-500 to-orange-500",
-    text:    "text-amber-800",
+    type: "uncertain", label: "Uncertain", icon: HelpCircle,
+    iconBg: "rgba(245,158,11,0.18)", iconColor: "#fbbf24",
+    hoverBorder: "rgba(245,158,11,0.35)",
   },
 ];
 
@@ -40,21 +31,21 @@ export default function ManualEventPanel({ cameraId = "cam01", onCreated }) {
   const [saving,    setSaving]    = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
 
-  async function submit(paymentType) {
+  async function submit(type) {
     setSaving(true);
     try {
-      const event = await createPaymentEvent({
-        payment_type:     paymentType,
-        confidence:       paymentType === "uncertain" ? "low" : "high",
+      const ev = await createPaymentEvent({
+        payment_type:     type,
+        confidence:       type === "uncertain" ? "low" : "high",
         camera_id:        cameraId,
-        observed_signals: defaultSignals[paymentType],
-        notes:            notes || (paymentType === "uncertain" ? "Payment type unclear" : `Manual ${paymentType} payment event`),
+        observed_signals: defaultSignals[type],
+        notes:            notes || (type === "uncertain" ? "Payment type unclear" : `Manual ${type} payment event`),
         source:           "manual",
       });
       setNotes("");
-      setLastSaved(paymentType);
+      setLastSaved(type);
       setTimeout(() => setLastSaved(null), 3000);
-      onCreated?.(event);
+      onCreated?.(ev);
     } finally {
       setSaving(false);
     }
@@ -65,47 +56,58 @@ export default function ManualEventPanel({ cameraId = "cam01", onCreated }) {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="font-bold text-slate-800">Manual Capture</h2>
-          <p className="mt-0.5 text-xs text-slate-500">Record a payment event you observed at the counter.</p>
+          <p className="font-semibold" style={{ color: "var(--t1)" }}>Manual Capture</p>
+          <p className="mt-0.5 text-xs" style={{ color: "var(--t3)" }}>Record a payment event you observed.</p>
         </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-violet-100 px-2.5 py-1 ring-1 ring-violet-200/60">
-          <Video size={11} className="text-violet-600" />
-          <span className="text-[11px] font-bold text-violet-700">{cameraId}</span>
+        <div
+          className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+          style={{ background: "var(--a-dim)", border: "1px solid rgba(124,58,237,0.22)", color: "#a78bfa" }}
+        >
+          <Video size={11} />
+          {cameraId}
         </div>
       </div>
 
-      {/* Notes textarea */}
+      {/* Notes */}
       <textarea
         className="input resize-none leading-relaxed"
         rows={3}
-        placeholder="Optional notes — invoice number, cashier name, or observation…"
+        placeholder="Optional notes — invoice #, cashier name, observation…"
         value={notes}
-        onChange={(e) => setNotes(e.target.value)}
+        onChange={e => setNotes(e.target.value)}
       />
 
-      {/* Success toast */}
+      {/* Toast */}
       {lastSaved && (
-        <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2.5 text-sm text-emerald-700 ring-1 ring-emerald-200 animate-fade-in">
-          <CheckCircle2 size={15} className="shrink-0" />
-          <span>
-            <span className="font-bold capitalize">{lastSaved}</span> payment recorded
-          </span>
+        <div
+          className="page flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium"
+          style={{ background: "var(--g-dim)", border: "1px solid rgba(16,185,129,0.2)", color: "#34d399" }}
+        >
+          <CheckCircle2 size={14} />
+          <span className="capitalize font-bold">{lastSaved}</span>&nbsp;payment recorded
         </div>
       )}
 
-      {/* Card-style capture buttons */}
+      {/* Capture buttons */}
       <div className="grid grid-cols-3 gap-2.5">
-        {btnConfig.map(({ type, label, icon: Icon, wrapper, iconBg, text }) => (
+        {btns.map(({ type, label, icon: Icon, iconBg, iconColor, hoverBorder }) => (
           <button
             key={type}
             disabled={saving}
             onClick={() => submit(type)}
-            className={`group flex flex-col items-center gap-2.5 rounded-2xl border-2 p-3.5 transition-all duration-150 hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 ${wrapper} disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100`}
+            className="capture-btn"
+            onMouseEnter={e => { e.currentTarget.style.borderColor = hoverBorder; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; }}
           >
-            <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${iconBg} text-white shadow-sm transition-transform group-hover:scale-105`}>
-              <Icon size={18} />
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl"
+              style={{ background: iconBg }}
+            >
+              <Icon size={18} style={{ color: iconColor }} />
             </div>
-            <span className={`text-xs font-bold leading-tight ${text}`}>{label}</span>
+            <span className="text-xs font-semibold leading-tight" style={{ color: "var(--t2)" }}>
+              {label}
+            </span>
           </button>
         ))}
       </div>

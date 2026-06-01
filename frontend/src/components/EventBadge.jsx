@@ -1,25 +1,19 @@
 import { Banknote, CreditCard, HelpCircle } from "lucide-react";
 
-const config = {
-  cash: {
-    classes: "bg-emerald-100 text-emerald-700 border border-emerald-200",
-    icon: Banknote,
-  },
-  card: {
-    classes: "bg-blue-100 text-blue-700 border border-blue-200",
-    icon: CreditCard,
-  },
-  uncertain: {
-    classes: "bg-amber-100 text-amber-700 border border-amber-200",
-    icon: HelpCircle,
-  },
+const cfg = {
+  cash:      { bg: "rgba(16,185,129,0.12)",  border: "rgba(16,185,129,0.25)",  color: "#34d399", icon: Banknote },
+  card:      { bg: "rgba(59,130,246,0.12)",  border: "rgba(59,130,246,0.25)",  color: "#60a5fa", icon: CreditCard },
+  uncertain: { bg: "rgba(245,158,11,0.12)",  border: "rgba(245,158,11,0.25)",  color: "#fbbf24", icon: HelpCircle },
 };
 
 export default function EventBadge({ type }) {
-  const { classes, icon: Icon } = config[type] || config.uncertain;
+  const { bg, border, color, icon: Icon } = cfg[type] || cfg.uncertain;
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${classes}`}>
-      <Icon size={11} />
+    <span
+      className="badge"
+      style={{ background: bg, borderColor: border, color }}
+    >
+      <Icon size={10} />
       {type || "uncertain"}
     </span>
   );

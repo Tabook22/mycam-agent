@@ -2,32 +2,21 @@ export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+      },
       colors: {
-        ink: "#0f172a",
-        brand: "#7c3aed",
-        "brand-dark": "#5b21b6",
-        "brand-light": "#8b5cf6",
-      },
-      animation: {
-        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "fade-in": "fadeIn 0.3s ease-out",
-        "slide-up": "slideUp 0.35s ease-out",
-      },
-      keyframes: {
-        fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        slideUp: {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
+        base:    "#09090e",
+        surface: "#111118",
+        s2:      "#17171f",
+        s3:      "#1e1e2a",
+        brand:   "#7c3aed",
       },
       boxShadow: {
-        "glow-brand": "0 0 20px rgba(124, 58, 237, 0.3)",
-        "glow-green": "0 0 20px rgba(5, 150, 105, 0.25)",
-        "glow-blue": "0 0 20px rgba(37, 99, 235, 0.25)",
-        "card-hover": "0 4px 16px rgba(15, 23, 42, 0.12), 0 12px 40px rgba(15, 23, 42, 0.08)",
+        "glow-violet": "0 0 24px rgba(124,58,237,0.35)",
+        "glow-green":  "0 0 16px rgba(16,185,129,0.40)",
+        "glow-blue":   "0 0 16px rgba(59,130,246,0.35)",
+        "glow-amber":  "0 0 16px rgba(245,158,11,0.35)",
       },
     },
   },

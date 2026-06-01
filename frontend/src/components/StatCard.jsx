@@ -1,32 +1,24 @@
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 const tones = {
-  total: { bg: "from-violet-600 to-indigo-600",  ring: "ring-violet-700/30" },
-  green: { bg: "from-emerald-600 to-teal-500",   ring: "ring-emerald-700/30" },
-  blue:  { bg: "from-blue-600 to-cyan-500",       ring: "ring-blue-700/30"   },
-  amber: { bg: "from-amber-500 to-orange-500",    ring: "ring-amber-600/30"  },
+  total: { top: "#7c3aed", glow: "rgba(124,58,237,0.18)", icon: "rgba(124,58,237,0.2)", iconText: "#a78bfa" },
+  green: { top: "#10b981", glow: "rgba(16,185,129,0.16)",  icon: "rgba(16,185,129,0.18)",  iconText: "#34d399" },
+  blue:  { top: "#3b82f6", glow: "rgba(59,130,246,0.16)",  icon: "rgba(59,130,246,0.18)",  iconText: "#60a5fa" },
+  amber: { top: "#f59e0b", glow: "rgba(245,158,11,0.16)",  icon: "rgba(245,158,11,0.18)",  iconText: "#fbbf24" },
 };
 
-// Sparkline — 7 SVG bars
 function Sparkline({ data }) {
   if (!data?.length) return null;
   const max = Math.max(...data, 1);
-  const W = 56, H = 22;
-  const bw = W / data.length - 1.5;
+  const W = 60, H = 24;
+  const bw = (W / data.length) - 1.5;
   return (
     <svg width={W} height={H} className="overflow-visible">
       {data.map((v, i) => {
         const bh = Math.max(2, (v / max) * H);
         return (
-          <rect
-            key={i}
-            x={i * (bw + 1.5)}
-            y={H - bh}
-            width={bw}
-            height={bh}
-            rx="1.5"
-            fill="rgba(255,255,255,0.38)"
-          />
+          <rect key={i} x={i * (bw + 1.5)} y={H - bh} width={bw} height={bh}
+            rx="1.5" fill="rgba(255,255,255,0.22)" />
         );
       })}
     </svg>
@@ -34,52 +26,59 @@ function Sparkline({ data }) {
 }
 
 export default function StatCard({ label, value, tone = "total", icon: Icon, sublabel, trend }) {
-  const { bg, ring } = tones[tone] || tones.total;
+  const t = tones[tone] || tones.total;
 
-  // % change: compare last two trend points
-  let pct = null;
-  let isUp = true;
+  let pct = null, isUp = true;
   if (trend?.length >= 2) {
     const prev = trend[trend.length - 2];
-    if (prev > 0) {
-      pct = Math.round(((value - prev) / prev) * 100);
-      isUp = pct >= 0;
-    }
+    if (prev > 0) { pct = Math.round(((value - prev) / prev) * 100); isUp = pct >= 0; }
   }
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${bg} p-4 shadow-lg ring-1 ${ring} transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-xl`}
+      className="group relative flex flex-col gap-3 overflow-hidden rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5"
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        borderTop: `2.5px solid ${t.top}`,
+        boxShadow: "none",
+      }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = t.glow + " 0 0 32px"; e.currentTarget.style.borderColor = "var(--border2)"; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "var(--border)"; }}
     >
-      {/* Decorative circles */}
-      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/10" />
-      <div className="pointer-events-none absolute -bottom-8 right-4 h-28 w-28 rounded-full bg-white/5" />
-
-      {/* Top row */}
-      <div className="relative flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/60 truncate">
-            {label}
-          </p>
-          <p className="mt-1 text-[2rem] font-black leading-none text-white tabular">
-            {value}
-          </p>
-          {sublabel && (
-            <p className="mt-0.5 text-[11px] text-white/50">{sublabel}</p>
-          )}
-        </div>
+      {/* Top row — label + icon */}
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--t3)" }}>
+          {label}
+        </p>
         {Icon && (
-          <div className="shrink-0 rounded-xl bg-white/20 p-2.5 backdrop-blur-sm">
-            <Icon size={18} className="text-white" />
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+            style={{ background: t.icon }}
+          >
+            <Icon size={15} style={{ color: t.iconText }} />
           </div>
         )}
       </div>
 
-      {/* Bottom row — sparkline + trend badge */}
-      <div className="relative mt-3 flex items-end justify-between gap-2">
+      {/* Value */}
+      <div>
+        <p className="tabular text-[2.25rem] font-black leading-none" style={{ color: "var(--t1)" }}>
+          {value}
+        </p>
+        {sublabel && (
+          <p className="mt-1 text-xs" style={{ color: "var(--t4)" }}>{sublabel}</p>
+        )}
+      </div>
+
+      {/* Bottom — sparkline + trend */}
+      <div className="flex items-end justify-between gap-2">
         <Sparkline data={trend} />
         {pct !== null && (
-          <span className={`flex items-center gap-0.5 text-[11px] font-bold ${isUp ? "text-white/75" : "text-red-300"}`}>
+          <span
+            className="flex items-center gap-0.5 text-[11px] font-bold"
+            style={{ color: isUp ? "#34d399" : "#f87171" }}
+          >
             {isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
             {isUp ? "+" : ""}{pct}%
           </span>

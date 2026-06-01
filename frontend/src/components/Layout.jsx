@@ -12,7 +12,7 @@ const NAV = [
   { to: "/settings", label: "Settings",  icon: Settings2 },
 ];
 
-// ── Top bar (date / clock / theme toggle / bell) ─────────────
+// ── Desktop top bar ───────────────────────────────────────────
 function TopBar({ theme, toggleTheme }) {
   const [now, setNow] = useState(new Date());
   useEffect(() => {
@@ -20,25 +20,29 @@ function TopBar({ theme, toggleTheme }) {
     return () => clearInterval(t);
   }, []);
 
-  const date = now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  const date = now.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
   const time = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const isLight = theme === "light";
 
   return (
     <div
-      className="sticky top-0 z-20 flex h-12 items-center justify-between gap-4 px-6"
+      className="sticky top-0 z-20 flex h-16 items-center justify-between gap-6 px-8"
       style={{
         background: "var(--topbar-bg)",
-        backdropFilter: "blur(20px)",
+        backdropFilter: "blur(24px)",
         borderBottom: "1px solid var(--border)",
       }}
     >
       {/* Left — date + clock */}
-      <div className="flex items-center gap-3">
-        <Clock size={13} style={{ color: "var(--t3)" }} className="hidden sm:block" />
-        <span className="hidden text-xs sm:block" style={{ color: "var(--t3)" }}>{date}</span>
+      <div className="flex items-center gap-4">
+        <div className="hidden items-center gap-2.5 sm:flex">
+          <Clock size={14} style={{ color: "var(--t3)" }} />
+          <span className="text-sm font-medium" style={{ color: "var(--t2)" }}>{date}</span>
+        </div>
+        {/* vertical divider */}
+        <div className="hidden h-5 w-px sm:block" style={{ background: "var(--border2)" }} />
         <div
-          className="rounded-md px-2.5 py-1 tabular mono text-xs font-semibold"
+          className="rounded-xl px-4 py-2 tabular mono text-sm font-semibold tracking-wide"
           style={{ background: "var(--s2)", color: "var(--t1)", border: "1px solid var(--border)" }}
         >
           {time}
@@ -46,53 +50,48 @@ function TopBar({ theme, toggleTheme }) {
       </div>
 
       {/* Right — theme toggle + bell + store */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
 
-        {/* ── Dark / Light toggle — high contrast ── */}
+        {/* Theme toggle — inverted colours */}
         <button
           onClick={toggleTheme}
-          title={`Switch to ${isLight ? "dark" : "light"} mode`}
-          className="flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200"
+          className="flex items-center gap-2.5 rounded-full px-5 py-2 text-sm font-bold transition-all duration-200"
           style={isLight ? {
-            /* In light mode → button looks dark so user knows they'll go dark */
-            background: "#1e1b2e",
-            color: "#e0d9ff",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
+            background: "#1e1b2e", color: "#e0d9ff",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.28)",
           } : {
-            /* In dark mode → button looks light so user knows they'll go light */
-            background: "#f0f4f8",
-            color: "#1e1b2e",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
+            background: "#f0f4f8", color: "#1e1b2e",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.45)",
           }}
         >
           {isLight
-            ? <Moon size={13} style={{ color: "#a78bfa" }} />
-            : <Sun  size={13} style={{ color: "#f59e0b" }} />
+            ? <Moon size={15} style={{ color: "#a78bfa" }} />
+            : <Sun  size={15} style={{ color: "#f59e0b" }} />
           }
-          <span>{isLight ? "Dark Mode" : "Light Mode"}</span>
+          {isLight ? "Dark Mode" : "Light Mode"}
         </button>
 
         {/* Bell */}
         <button
-          className="relative rounded-xl p-2 transition-colors"
-          style={{ color: "var(--t3)" }}
-          onMouseEnter={e => e.currentTarget.style.background = "var(--s2)"}
-          onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+          className="relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
+          style={{ color: "var(--t2)", border: "1px solid var(--border)" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "var(--s2)"; e.currentTarget.style.color = "var(--t1)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--t2)"; }}
         >
-          <Bell size={15} />
-          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-violet-500" />
+          <Bell size={16} />
+          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-violet-500" />
         </button>
 
         {/* Store chip */}
         <div
-          className="hidden items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium sm:flex"
+          className="hidden items-center gap-2.5 rounded-xl px-4 py-2 text-sm font-semibold sm:flex"
           style={{
             background: "var(--a-dim)",
-            border: "1px solid rgba(124,58,237,0.2)",
+            border: "1px solid rgba(124,58,237,0.22)",
             color: isLight ? "#6d28d9" : "#c4b5fd",
           }}
         >
-          <Store size={12} />
+          <Store size={14} />
           Perfume Shop
         </div>
       </div>
@@ -291,32 +290,75 @@ export default function Layout() {
       {/* ── Main ────────────────────────────── */}
       <div className="flex min-h-screen w-full flex-col md:pl-52">
 
-        {/* Mobile header */}
-        <header className="sticky top-0 z-30 flex h-12 items-center gap-3 px-4 md:hidden"
-          style={{ background: "var(--topbar-bg)", backdropFilter: "blur(20px)", borderBottom: "1px solid var(--border)" }}>
-          <button onClick={() => setOpen(true)} className="rounded-xl p-2" style={{ color: "var(--t3)" }}>
-            <Menu size={19} />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
-              style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
-              <Camera size={13} className="text-white" />
+        {/* ── Mobile header ─────────────────── */}
+        <header
+          className="sticky top-0 z-30 md:hidden"
+          style={{
+            background: "var(--topbar-bg)",
+            backdropFilter: "blur(24px)",
+            borderBottom: "1px solid var(--border)",
+          }}
+        >
+          {/* Main row */}
+          <div className="flex h-16 items-center justify-between gap-4 px-5">
+
+            {/* Left — hamburger + logo */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setOpen(true)}
+                className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
+                style={{ color: "var(--t2)", border: "1px solid var(--border)" }}
+                onMouseEnter={e => e.currentTarget.style.background = "var(--s2)"}
+                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+              >
+                <Menu size={18} />
+              </button>
+
+              {/* vertical divider */}
+              <div className="h-5 w-px" style={{ background: "var(--border2)" }} />
+
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="flex h-8 w-8 items-center justify-center rounded-xl"
+                  style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 2px 8px rgba(124,58,237,0.35)" }}
+                >
+                  <Camera size={15} className="text-white" />
+                </div>
+                <span className="text-base font-bold" style={{ color: "var(--t1)" }}>MyCamAgent</span>
+              </div>
             </div>
-            <span className="text-sm font-bold" style={{ color: "var(--t1)" }}>MyCamAgent</span>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold"
-              style={theme === "light"
-                ? { background: "#1e1b2e", color: "#e0d9ff" }
-                : { background: "#f0f4f8", color: "#1e1b2e" }}
-            >
-              {theme === "light" ? <Moon size={12} style={{ color: "#a78bfa" }} /> : <Sun size={12} style={{ color: "#f59e0b" }} />}
-              {theme === "light" ? "Dark" : "Light"}
-            </button>
-            <div className="live-dot" />
-            <span className="text-xs font-medium" style={{ color: "var(--green)" }}>Live</span>
+
+            {/* Right — theme toggle + live chip */}
+            <div className="flex items-center gap-3">
+
+              {/* Theme toggle */}
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200"
+                style={theme === "light" ? {
+                  background: "#1e1b2e", color: "#e0d9ff",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.28)",
+                } : {
+                  background: "#f0f4f8", color: "#1e1b2e",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
+                }}
+              >
+                {theme === "light"
+                  ? <Moon size={13} style={{ color: "#a78bfa" }} />
+                  : <Sun  size={13} style={{ color: "#f59e0b" }} />
+                }
+                {theme === "light" ? "Dark" : "Light"}
+              </button>
+
+              {/* Live chip */}
+              <div
+                className="flex items-center gap-2 rounded-full px-3 py-1.5"
+                style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)" }}
+              >
+                <div className="live-dot" style={{ width: "6px", height: "6px" }} />
+                <span className="text-xs font-semibold" style={{ color: "var(--green)" }}>Live</span>
+              </div>
+            </div>
           </div>
         </header>
 

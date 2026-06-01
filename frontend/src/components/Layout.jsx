@@ -103,101 +103,126 @@ function TopBar({ theme, toggleTheme }) {
 // ── Sidebar ──────────────────────────────────────────────────
 function Sidebar({ onClose, apiOk, theme, toggleTheme }) {
   const isLight = theme === "light";
+
   return (
     <div className="flex h-full flex-col">
-      {/* Brand */}
-      <div className="px-5 pb-5 pt-6">
+
+      {/* ── Brand ─────────────────────────────── */}
+      <div className="px-6 pb-5 pt-7">
         <div className="flex items-center gap-3">
           <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-            style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 0 18px rgba(124,58,237,0.4)" }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
+            style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)", boxShadow: "0 4px 14px rgba(124,58,237,0.4)" }}
           >
-            <Camera size={17} className="text-white" />
+            <Camera size={18} className="text-white" />
           </div>
           <div>
             <p className="text-sm font-bold" style={{ color: "var(--t1)" }}>MyCamAgent</p>
-            <p className="text-[10px]" style={{ color: "var(--t4)" }}>Retail Intelligence</p>
+            <p className="text-[11px]" style={{ color: "var(--t4)" }}>Retail Intelligence</p>
           </div>
         </div>
 
-        {/* Live pill */}
+        {/* Online pill */}
         <div
-          className="mt-4 flex items-center gap-2 rounded-xl px-3 py-2"
+          className="mt-4 flex items-center gap-2.5 rounded-xl px-3.5 py-2.5"
           style={{ background: "rgba(16,185,129,0.09)", border: "1px solid rgba(16,185,129,0.2)" }}
         >
           <div className="live-dot" />
-          <span className="text-xs font-medium" style={{ color: "var(--green)" }}>System Online</span>
+          <span className="text-xs font-semibold" style={{ color: "var(--green)" }}>System Online</span>
         </div>
       </div>
 
-      <div className="divider mx-5" />
+      <div className="divider mx-6" />
 
-      {/* Nav */}
-      <nav className="flex-1 space-y-0.5 px-3 py-4">
-        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--t4)" }}>
-          Workspace
+      {/* ── Navigation ────────────────────────── */}
+      <nav className="flex-1 px-4 py-5">
+        <p className="mb-3 px-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--t4)" }}>
+          Navigation
         </p>
-        {NAV.map(({ to, label, icon: Icon }) => (
-          <NavLink
-            key={to} to={to} end={to === "/"} onClick={onClose}
-            className="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150"
-            style={({ isActive }) => ({
-              background: isActive ? "var(--a-dim)" : "transparent",
-              color: isActive ? (isLight ? "#6d28d9" : "#c4b5fd") : "var(--t3)",
-              border: isActive ? "1px solid rgba(124,58,237,0.22)" : "1px solid transparent",
-            })}
-          >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
-                    style={{ width: "3px", height: "18px", background: "var(--accent)" }} />
-                )}
-                <Icon size={15} />
-                {label}
-              </>
-            )}
-          </NavLink>
-        ))}
+        <div className="space-y-1">
+          {NAV.map(({ to, label, icon: Icon }) => (
+            <NavLink
+              key={to} to={to} end={to === "/"} onClick={onClose}
+              className="group relative flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-150"
+              style={({ isActive }) => ({
+                background: isActive ? "var(--a-dim)" : "transparent",
+                color: isActive ? (isLight ? "#6d28d9" : "#c4b5fd") : "var(--t2)",
+                border: isActive ? "1px solid rgba(124,58,237,0.2)" : "1px solid transparent",
+              })}
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <span
+                      className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
+                      style={{ width: "3px", height: "20px", background: "var(--accent)" }}
+                    />
+                  )}
+                  <Icon size={16} />
+                  {label}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
       </nav>
 
-      {/* Footer */}
-      <div className="mx-4 mb-4">
-        {/* Theme toggle in sidebar */}
-        <button
-          onClick={toggleTheme}
-          className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200"
-          style={isLight ? {
-            background: "#1e1b2e", color: "#e0d9ff", boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-          } : {
-            background: "#f0f4f8", color: "#1e1b2e", boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-          }}
-        >
-          {isLight
-            ? <><Moon size={13} style={{ color: "#a78bfa" }} /> Switch to Dark Mode</>
-            : <><Sun  size={13} style={{ color: "#f59e0b" }} /> Switch to Light Mode</>
-          }
-        </button>
+      <div className="divider mx-6" />
 
-        {/* System status */}
-        <div className="rounded-xl p-3 text-xs space-y-2"
-          style={{ background: "rgba(128,128,128,0.05)", border: "1px solid var(--border)" }}>
-          <div className="flex items-center gap-1.5 mb-1">
-            <ShieldCheck size={11} style={{ color: "var(--t4)" }} />
-            <span className="font-semibold uppercase tracking-wider" style={{ color: "var(--t4)", fontSize: "10px" }}>
+      {/* ── Footer ────────────────────────────── */}
+      <div className="px-4 py-5 space-y-3">
+
+        {/* Theme toggle — card style */}
+        <div
+          className="overflow-hidden rounded-2xl"
+          style={{ border: "1px solid var(--border)", background: "var(--s2)" }}
+        >
+          <p className="px-4 pt-3.5 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--t4)" }}>
+            Appearance
+          </p>
+          <button
+            onClick={toggleTheme}
+            className="mt-2 mb-3 mx-3 flex w-[calc(100%-1.5rem)] items-center justify-center gap-2.5 rounded-xl py-2.5 text-xs font-bold transition-all duration-200"
+            style={isLight ? {
+              background: "#1e1b2e",
+              color: "#e0d9ff",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
+            } : {
+              background: "#f0f4f8",
+              color: "#1e1b2e",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.35)",
+            }}
+          >
+            {isLight
+              ? <><Moon size={14} style={{ color: "#a78bfa" }} /> Switch to Dark Mode</>
+              : <><Sun  size={14} style={{ color: "#f59e0b" }} /> Switch to Light Mode</>
+            }
+          </button>
+        </div>
+
+        {/* System status — card style */}
+        <div
+          className="overflow-hidden rounded-2xl"
+          style={{ border: "1px solid var(--border)", background: "var(--s2)" }}
+        >
+          <div className="flex items-center gap-2 px-4 pt-3.5 pb-2">
+            <ShieldCheck size={12} style={{ color: "var(--t4)" }} />
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--t4)" }}>
               System Status
-            </span>
+            </p>
           </div>
-          <div className="flex items-center justify-between">
-            <span style={{ color: "var(--t4)" }}>Backend API</span>
-            <span className={`flex items-center gap-1 font-semibold ${apiOk ? "text-emerald-500" : "text-red-400"}`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${apiOk ? "bg-emerald-500" : "bg-red-400"}`} />
-              {apiOk ? "Healthy" : "Down"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span style={{ color: "var(--t4)" }}>Version</span>
-            <span style={{ color: "var(--t3)" }} className="font-medium">v1.0.0</span>
+          <div className="px-4 pb-3.5 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs" style={{ color: "var(--t3)" }}>Backend API</span>
+              <span className={`flex items-center gap-1.5 text-xs font-semibold ${apiOk ? "text-emerald-500" : "text-red-400"}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${apiOk ? "bg-emerald-500" : "bg-red-400"}`} />
+                {apiOk ? "Healthy" : "Down"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs" style={{ color: "var(--t3)" }}>Version</span>
+              <span className="text-xs font-semibold" style={{ color: "var(--t2)" }}>v1.0.0</span>
+            </div>
           </div>
         </div>
       </div>

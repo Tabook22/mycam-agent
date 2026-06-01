@@ -37,6 +37,7 @@
   --detect-bg:   #07070f;
   --card-shadow: none;
   --nav-shadow:  none;
+  --sparkline:   rgba(255,255,255,0.28);
 }
 
 /* ══════════════════════════════════════════
@@ -72,6 +73,7 @@
   --detect-bg:   #1a1a2e;
   --card-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.04);
   --nav-shadow:  1px 0 0 rgba(0,0,0,0.06);
+  --sparkline:   rgba(0,0,0,0.2);
 }
 
 /* ══════════════════════════════════════════

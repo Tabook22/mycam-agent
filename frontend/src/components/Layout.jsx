@@ -48,24 +48,28 @@ function TopBar({ theme, toggleTheme }) {
       {/* Right — theme toggle + bell + store */}
       <div className="flex items-center gap-2">
 
-        {/* ── Dark / Light toggle ─────── */}
+        {/* ── Dark / Light toggle — high contrast ── */}
         <button
           onClick={toggleTheme}
           title={`Switch to ${isLight ? "dark" : "light"} mode`}
-          className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all"
-          style={{
-            background: isLight ? "var(--s2)" : "rgba(255,255,255,0.07)",
-            border: "1px solid var(--border)",
-            color: "var(--t2)",
+          className="flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200"
+          style={isLight ? {
+            /* In light mode → button looks dark so user knows they'll go dark */
+            background: "#1e1b2e",
+            color: "#e0d9ff",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
+          } : {
+            /* In dark mode → button looks light so user knows they'll go light */
+            background: "#f0f4f8",
+            color: "#1e1b2e",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
           }}
-          onMouseEnter={e => e.currentTarget.style.borderColor = "var(--border2)"}
-          onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
         >
           {isLight
-            ? <Moon size={14} style={{ color: "#818cf8" }} />
-            : <Sun  size={14} style={{ color: "#fbbf24" }} />
+            ? <Moon size={13} style={{ color: "#a78bfa" }} />
+            : <Sun  size={13} style={{ color: "#f59e0b" }} />
           }
-          <span className="hidden sm:inline">{isLight ? "Dark" : "Light"}</span>
+          <span>{isLight ? "Dark Mode" : "Light Mode"}</span>
         </button>
 
         {/* Bell */}
@@ -159,15 +163,19 @@ function Sidebar({ onClose, apiOk, theme, toggleTheme }) {
 
       {/* Footer */}
       <div className="mx-4 mb-4">
-        {/* Theme toggle in sidebar (mobile-friendly) */}
+        {/* Theme toggle in sidebar */}
         <button
           onClick={toggleTheme}
-          className="mb-3 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all"
-          style={{ background: "var(--s2)", border: "1px solid var(--border)", color: "var(--t2)" }}
+          className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200"
+          style={isLight ? {
+            background: "#1e1b2e", color: "#e0d9ff", boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+          } : {
+            background: "#f0f4f8", color: "#1e1b2e", boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+          }}
         >
           {isLight
-            ? <><Moon size={14} style={{ color: "#818cf8" }} /> Switch to Dark Mode</>
-            : <><Sun  size={14} style={{ color: "#fbbf24" }} /> Switch to Light Mode</>
+            ? <><Moon size={13} style={{ color: "#a78bfa" }} /> Switch to Dark Mode</>
+            : <><Sun  size={13} style={{ color: "#f59e0b" }} /> Switch to Light Mode</>
           }
         </button>
 
@@ -272,8 +280,15 @@ export default function Layout() {
             <span className="text-sm font-bold" style={{ color: "var(--t1)" }}>MyCamAgent</span>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <button onClick={toggleTheme} className="rounded-lg p-1.5" style={{ color: "var(--t3)" }}>
-              {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold"
+              style={theme === "light"
+                ? { background: "#1e1b2e", color: "#e0d9ff" }
+                : { background: "#f0f4f8", color: "#1e1b2e" }}
+            >
+              {theme === "light" ? <Moon size={12} style={{ color: "#a78bfa" }} /> : <Sun size={12} style={{ color: "#f59e0b" }} />}
+              {theme === "light" ? "Dark" : "Light"}
             </button>
             <div className="live-dot" />
             <span className="text-xs font-medium" style={{ color: "var(--green)" }}>Live</span>
@@ -285,8 +300,8 @@ export default function Layout() {
           <TopBar theme={theme} toggleTheme={toggleTheme} />
         </div>
 
-        {/* ── Page content — 10% horizontal margins ── */}
-        <main className="flex-1 px-[5%] py-8 sm:px-[7%] lg:px-[8%]">
+        {/* ── Page content — 5% all sides ── */}
+        <main className="flex-1 p-[5%]">
           <div className="mx-auto max-w-5xl">
             <Outlet />
           </div>

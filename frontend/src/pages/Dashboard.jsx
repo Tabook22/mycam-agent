@@ -58,6 +58,7 @@ export default function Dashboard() {
   const [selCam,    setSelCam]    = useState("cam01");
   const [streaming, setStreaming] = useState(null);
   const [loading,   setLoading]   = useState(true);
+  const [camSize,   setCamSize]   = useState("md"); // sm | md | lg
 
   const activeCam = (cameras.find(c => c.camera_id === selCam) || cameras[0])?.camera_id || "cam01";
   const selCamera = cameras.find(c => c.camera_id === selCam) || cameras[0];
@@ -112,21 +113,43 @@ export default function Dashboard() {
 
         {/* Camera card */}
         <div className="card space-y-4">
-          <div className="flex items-start justify-between gap-3">
+          {/* Header row: title + status + size controls */}
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="font-semibold" style={{ color: "var(--t1)" }}>Live Camera Feed</p>
               <p className="text-xs mt-0.5" style={{ color: "var(--t3)" }}>Source: {selCamera?.source || "0"}</p>
             </div>
-            <span
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-              style={selCamera?.status === "streaming"
-                ? { background: "var(--g-dim)", color: "var(--green)", border: "1px solid rgba(16,185,129,0.25)" }
-                : { background: "rgba(255,255,255,0.05)", color: "var(--t3)", border: "1px solid var(--border)" }
-              }
-            >
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: selCamera?.status === "streaming" ? "var(--green)" : "var(--t4)" }} />
-              {selCamera?.status || "stopped"}
-            </span>
+            <div className="flex items-center gap-2">
+              {/* ── Camera size preset buttons ── */}
+              <div className="flex items-center gap-1 rounded-xl p-1" style={{ background: "var(--s2)", border: "1px solid var(--border)" }}>
+                {[
+                  { key: "sm", label: "S", title: "Compact view" },
+                  { key: "md", label: "M", title: "Standard 16:9" },
+                  { key: "lg", label: "L", title: "Large 4:3" },
+                ].map(({ key, label, title }) => (
+                  <button
+                    key={key}
+                    title={title}
+                    onClick={() => setCamSize(key)}
+                    className={`size-btn ${camSize === key ? "active" : ""}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {/* Status badge */}
+              <span
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                style={selCamera?.status === "streaming"
+                  ? { background: "var(--g-dim)", color: "var(--green)", border: "1px solid rgba(16,185,129,0.25)" }
+                  : { background: "rgba(128,128,128,0.07)", color: "var(--t3)", border: "1px solid var(--border)" }
+                }
+              >
+                <span className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: selCamera?.status === "streaming" ? "var(--green)" : "var(--t4)" }} />
+                {selCamera?.status || "stopped"}
+              </span>
+            </div>
           </div>
 
           {/* Controls */}
@@ -148,13 +171,18 @@ export default function Dashboard() {
             </p>
           )}
 
-          {/* Video frame */}
-          <div className="relative overflow-hidden rounded-2xl" style={{ background: "#06060b", border: "1px solid var(--border)" }}>
+          {/* Video frame — size controlled by camSize */}
+          <div className="relative overflow-hidden rounded-2xl" style={{ background: "var(--cam-bg)", border: "1px solid var(--border)" }}>
             {streaming === activeCam ? (
               <>
                 <img
                   src={useDetStream ? detectionStreamUrl(activeCam) : cameraStreamUrl(activeCam)}
-                  alt="stream" className="aspect-video w-full object-contain"
+                  alt="stream"
+                  className="w-full object-contain"
+                  style={{
+                    aspectRatio: camSize === "sm" ? "21/9" : camSize === "lg" ? "4/3" : "16/9",
+                    transition: "aspect-ratio 0.3s ease",
+                  }}
                 />
                 <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full px-2.5 py-1" style={{ background:"rgba(0,0,0,0.65)", backdropFilter:"blur(8px)" }}>
                   <div className="live-dot" />
@@ -168,8 +196,11 @@ export default function Dashboard() {
                 )}
               </>
             ) : (
-              <div className="flex aspect-video flex-col items-center justify-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:"rgba(255,255,255,0.04)" }}>
+              <div
+                className="flex flex-col items-center justify-center gap-3"
+                style={{ aspectRatio: camSize === "sm" ? "21/9" : camSize === "lg" ? "4/3" : "16/9" }}
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background:"rgba(128,128,128,0.07)" }}>
                   <Camera size={28} style={{ color:"var(--t4)" }} />
                 </div>
                 <p className="text-sm" style={{ color:"var(--t4)" }}>Select a camera and click <span style={{color:"var(--t2)"}}>Open</span></p>
